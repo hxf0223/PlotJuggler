@@ -166,7 +166,7 @@ if(WIN32)
     $<$<CONFIG:Debug>:--debug>
     $<$<NOT:$<CONFIG:Debug>>:--release>
     --no-translations --no-system-d3d-compiler --compiler-runtime --no-opengl-sw
-    --dir "${CMAKE_INSTALL_PREFIX}/bin"
+    --libdir $<TARGET_FILE_DIR:plotjuggler>
     $<TARGET_FILE:plotjuggler>
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running windeployqt to deploy Qt dependencies"
