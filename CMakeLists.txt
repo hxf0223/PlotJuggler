@@ -219,7 +219,8 @@ target_include_directories(
 target_link_libraries(
   plotjuggler_base
   PUBLIC plotjuggler_qwt
-  PRIVATE fmt::fmt lua::lua)
+  PUBLIC fmt::fmt
+  PRIVATE lua::lua)
 
 # Add compile definitions to plotjuggler_base
 target_compile_definitions(
@@ -227,7 +228,8 @@ target_compile_definitions(
   PUBLIC PJ_MAJOR_VERSION=${PROJECT_VERSION_MAJOR}
   PJ_MINOR_VERSION=${PROJECT_VERSION_MINOR}
   PJ_PATCH_VERSION=${PROJECT_VERSION_PATCH}
-  FMT_HEADER_ONLY
+
+  # FMT_HEADER_ONLY
   $<$<BOOL:${COMPILING_WITH_CATKIN}>:COMPILED_WITH_CATKIN>
   $<$<BOOL:${COMPILING_WITH_AMENT}>:COMPILED_WITH_AMENT>)
 
