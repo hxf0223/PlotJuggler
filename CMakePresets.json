@@ -1,0 +1,108 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "windows-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "environment": {
+                "VCPKG_ROOT": "D:/dev_libs/vcpkg",
+                "HTTP_PROXY": "127.0.0.1:7890",
+                "HTTPS_PROXY": "127.0.0.1:7890"
+            },
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_CXX_FLAGS": "/utf-8 /EHsc",
+                "CMAKE_C_COMPILER": "cl",
+                "CMAKE_CXX_COMPILER": "cl"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "hostOS": [
+                        "Windows"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "x64-debug",
+            "displayName": "Debug x64",
+            "description": "Debug build with full debugging information",
+            "inherits": "windows-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS_DEBUG": "/Zi /Ob0 /Od /RTC1",
+                "CMAKE_C_FLAGS_DEBUG": "/Zi /Ob0 /Od /RTC1"
+            }
+        },
+        {
+            "name": "x64-release",
+            "displayName": "Release x64",
+            "description": "Optimized release build",
+            "inherits": "windows-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_FLAGS_RELEASE": "/O2 /Ob2 /DNDEBUG",
+                "CMAKE_C_FLAGS_RELEASE": "/O2 /Ob2 /DNDEBUG"
+            }
+        },
+        {
+            "name": "x64-relwithdebinfo",
+            "displayName": "RelWithDebInfo x64",
+            "description": "Release build with debug information",
+            "inherits": "windows-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "/O2 /Ob1 /Zi /DNDEBUG",
+                "CMAKE_C_FLAGS_RELWITHDEBINFO": "/O2 /Ob1 /Zi /DNDEBUG"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "x64-debug",
+            "displayName": "Build Debug x64",
+            "configurePreset": "x64-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x64-release",
+            "displayName": "Build Release x64",
+            "configurePreset": "x64-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "x64-relwithdebinfo",
+            "displayName": "Build RelWithDebInfo x64",
+            "configurePreset": "x64-relwithdebinfo",
+            "configuration": "RelWithDebInfo"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "x64-debug",
+            "displayName": "Test Debug x64",
+            "configurePreset": "x64-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x64-release",
+            "displayName": "Test Release x64",
+            "configurePreset": "x64-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "x64-relwithdebinfo",
+            "displayName": "Test RelWithDebInfo x64",
+            "configurePreset": "x64-relwithdebinfo",
+            "configuration": "RelWithDebInfo"
+        }
+    ]
+}

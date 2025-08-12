@@ -1,16 +1,17 @@
-if(BUILDING_WITH_CONAN)
+if(BUILDING_WITH_VCPKG)
+  message(STATUS "Finding Protobuf with vcpkg")
+  set(Protobuf_LIBS protobuf::libprotobuf)
+elseif(BUILDING_WITH_CONAN)
   message(STATUS "Finding Protobuf with conan")
   set(Protobuf_LIBS protobuf::libprotobuf)
 else()
   message(STATUS "Finding Protobuf without package managers")
-  find_package(Protobuf QUIET)
   set(Protobuf_LIBS ${Protobuf_LIBRARIES})
 endif()
 
 find_package(Protobuf QUIET)
 
 if(PROTOBUF_FOUND)
-
   include_directories(../)
   message(STATUS "[Protobuf] found")
   qt5_wrap_ui(UI_SRC protobuf_parser.ui)
@@ -19,7 +20,7 @@ if(PROTOBUF_FOUND)
 
   add_library(
     ProtobufParser SHARED error_collectors.cpp protobuf_parser.cpp
-                          protobuf_factory.cpp protobuf_parser.h ${UI_SRC})
+    protobuf_factory.cpp protobuf_parser.h ${UI_SRC})
 
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     find_library(ABSL_SPINLOCK_WAIT_LIB absl_spinlock_wait)
@@ -30,8 +31,14 @@ if(PROTOBUF_FOUND)
   endif()
 
   target_link_libraries(
-    ProtobufParser PRIVATE Qt5::Widgets Qt5::Xml ${Protobuf_LIBS}
-                           plotjuggler_base plotjuggler_qwt fmt::fmt)
+    ProtobufParser PRIVATE Qt5::Widgets Qt5::Xml
+    plotjuggler_base plotjuggler_qwt fmt::fmt)
+
+  if(BUILDING_WITH_VCPKG OR BUILDING_WITH_CONAN)
+    target_link_libraries(ProtobufParser PRIVATE protobuf::libprotobuf)
+  else()
+    target_link_libraries(ProtobufParser PRIVATE ${Protobuf_LIBRARIES})
+  endif()
 
   install(TARGETS ProtobufParser DESTINATION ${PJ_PLUGIN_INSTALL_DIRECTORY})
 else()

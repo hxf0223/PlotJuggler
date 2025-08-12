@@ -29,6 +29,7 @@
 *.app
 *.snap
 
+/out
 /build*
 /*.user
 

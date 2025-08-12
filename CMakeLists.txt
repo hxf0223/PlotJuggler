@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
+# set(VCPKG_TARGET_TRIPLET x64-windows-static)
 project(
   plotjuggler
   LANGUAGES C CXX
@@ -18,16 +19,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
 # set(PJ_DEFAULT_ARGS "-n
 # --enabled_plugins=libDataLoadCSV_0x3b_libDataStreamSample") add_definitions(
 # -DPJ_DEFAULT_ARGS="${PJ_DEFAULT_ARGS}")
-
 option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
 option(BASE_AS_SHARED "Build the base library as a shared library" OFF)
 option(BUILDING_WITH_CONAN "Using Conan for dependencies" OFF)
 
 if(NOT WIN32 AND ENABLE_ASAN)
   set(CMAKE_CXX_FLAGS
-      "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
   set(CMAKE_LINKER_FLAGS
-      "${CMAKE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    "${CMAKE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
 endif()
 
 if(VCPKG_TOOLCHAIN)
@@ -60,8 +60,8 @@ if(catkin_FOUND)
   message(STATUS ${catkin_INCLUDE_DIRS})
 
   include_directories(${catkin_INCLUDE_DIRS})
-  # COMPILED_WITH_CATKIN will be added to plotjuggler_base target later
 
+# COMPILED_WITH_CATKIN will be added to plotjuggler_base target later
 elseif(ament_cmake_FOUND)
   set(COMPILING_WITH_AMENT 1)
 
@@ -104,24 +104,24 @@ endif()
 find_package(
   Qt5 REQUIRED
   COMPONENTS Core
-             Widgets
-             PrintSupport
-             Concurrent
-             Xml
-             Svg
-             OpenGL
-             WebSockets
-             Network)
+  Widgets
+  PrintSupport
+  Concurrent
+  Xml
+  Svg
+  OpenGL
+  WebSockets
+  Network)
 
 set(QT_LINK_LIBRARIES
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::PrintSupport
-    Qt5::Xml
-    Qt5::Concurrent
-    Qt5::Svg
-    Qt5::OpenGL
-    Qt5::WebSockets)
+  Qt5::Core
+  Qt5::Widgets
+  Qt5::PrintSupport
+  Qt5::Xml
+  Qt5::Concurrent
+  Qt5::Svg
+  Qt5::OpenGL
+  Qt5::WebSockets)
 
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to RelWithDebInfo")
@@ -132,8 +132,10 @@ if(WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -D_USE_MATH_DEFINES")
   set(CMAKE_WIN32_EXECUTABLE ON)
   set(GUI_TYPE WIN32)
+
   if(MSVC)
     add_compile_options(/wd4267 /wd4996)
+    add_compile_options(/utf-8)
   endif()
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -fPIC -fno-omit-frame-pointer")
@@ -151,7 +153,6 @@ include_directories(
   ${Qt5OpenGL_INCLUDE_DIRS})
 
 # ########################  3rd party dependencies  #########################
-
 include(FetchContent)
 include(cmake/CPM.cmake)
 
@@ -180,19 +181,18 @@ if(NOT WIN32)
 endif()
 
 # ########################  BASE library  ####################################
-
 set(PLOTJUGGLER_BASE_SRC
-    plotjuggler_base/src/plotdata.cpp
-    plotjuggler_base/src/datastreamer_base.cpp
-    plotjuggler_base/src/transform_function.cpp
-    plotjuggler_base/src/plotwidget_base.cpp
-    plotjuggler_base/src/plotzoomer.cpp
-    plotjuggler_base/src/plotmagnifier.cpp
-    plotjuggler_base/src/plotlegend.cpp
-    plotjuggler_base/src/plotpanner.cpp
-    plotjuggler_base/src/timeseries_qwt.cpp
-    plotjuggler_base/src/reactive_function.cpp
-    plotjuggler_base/src/save_plot.cpp)
+  plotjuggler_base/src/plotdata.cpp
+  plotjuggler_base/src/datastreamer_base.cpp
+  plotjuggler_base/src/transform_function.cpp
+  plotjuggler_base/src/plotwidget_base.cpp
+  plotjuggler_base/src/plotzoomer.cpp
+  plotjuggler_base/src/plotmagnifier.cpp
+  plotjuggler_base/src/plotlegend.cpp
+  plotjuggler_base/src/plotpanner.cpp
+  plotjuggler_base/src/timeseries_qwt.cpp
+  plotjuggler_base/src/reactive_function.cpp
+  plotjuggler_base/src/save_plot.cpp)
 
 qt5_wrap_cpp(
   PLOTJUGGLER_BASE_MOCS
@@ -205,16 +205,16 @@ qt5_wrap_cpp(
 
 if(BASE_AS_SHARED)
   add_library(plotjuggler_base SHARED ${PLOTJUGGLER_BASE_SRC}
-                                      ${PLOTJUGGLER_BASE_MOCS})
+    ${PLOTJUGGLER_BASE_MOCS})
 else()
   add_library(plotjuggler_base STATIC ${PLOTJUGGLER_BASE_SRC}
-                                      ${PLOTJUGGLER_BASE_MOCS})
+    ${PLOTJUGGLER_BASE_MOCS})
 endif()
 
 target_include_directories(
   plotjuggler_base
   PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/sol2-3.5.0/include>)
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/sol2-3.5.0/include>)
 
 target_link_libraries(
   plotjuggler_base
@@ -225,65 +225,60 @@ target_link_libraries(
 target_compile_definitions(
   plotjuggler_base
   PUBLIC PJ_MAJOR_VERSION=${PROJECT_VERSION_MAJOR}
-         PJ_MINOR_VERSION=${PROJECT_VERSION_MINOR}
-         PJ_PATCH_VERSION=${PROJECT_VERSION_PATCH}
-         FMT_HEADER_ONLY
-         $<$<BOOL:${COMPILING_WITH_CATKIN}>:COMPILED_WITH_CATKIN>
-         $<$<BOOL:${COMPILING_WITH_AMENT}>:COMPILED_WITH_AMENT>)
+  PJ_MINOR_VERSION=${PROJECT_VERSION_MINOR}
+  PJ_PATCH_VERSION=${PROJECT_VERSION_PATCH}
+  FMT_HEADER_ONLY
+  $<$<BOOL:${COMPILING_WITH_CATKIN}>:COMPILED_WITH_CATKIN>
+  $<$<BOOL:${COMPILING_WITH_AMENT}>:COMPILED_WITH_AMENT>)
 
 target_include_directories(
   plotjuggler_base
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/plotjuggler_base/include>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/plotjuggler_base/src>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/qwt/src>
-         $<INSTALL_INTERFACE:include>)
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/plotjuggler_base/src>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/qwt/src>
+  $<INSTALL_INTERFACE:include>)
 
 # ########################  INSTALL  ####################################
-
 if(COMPILING_WITH_CATKIN)
-
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
-      ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_LIB_DESTINATION})
+    ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_LIB_DESTINATION})
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
-      ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION})
+    ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION})
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
-      ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION})
+    ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION})
   set(PJ_PLUGIN_INSTALL_DIRECTORY ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 elseif(COMPILING_WITH_AMENT)
-
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
   set(PJ_PLUGIN_INSTALL_DIRECTORY lib/${PROJECT_NAME})
 
   ament_export_targets(${PROJECT_NAME}Targets export_plotjuggler_qwt
-                       HAS_LIBRARY_TARGET)
+    HAS_LIBRARY_TARGET)
   ament_package()
 else()
-
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
   set(PJ_PLUGIN_INSTALL_DIRECTORY bin)
-
 endif()
 
-set(DESKTOP_ICON_DIR "${CMAKE_INSTALL_PREFIX}/share/icons")
+if(UNIX AND NOT APPLE)
+  set(DESKTOP_ICON_DIR "share/icons")
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/PlotJuggler.desktop
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/PlotJuggler.desktop
+    DESTINATION "share/applications")
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plotjuggler.svg
-        DESTINATION ${DESKTOP_ICON_DIR})
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plotjuggler.svg
+    DESTINATION ${DESKTOP_ICON_DIR})
+endif()
 
 # ######################## Main App, Libraries and Plugins
 # ##############################################################################
-
 add_subdirectory(plotjuggler_app)
 add_subdirectory(plotjuggler_plugins)
 
 # # Install targets
-
 install(
   TARGETS plotjuggler_base plotjuggler_qwt
   EXPORT ${PROJECT_NAME}Targets
@@ -298,7 +293,6 @@ install(DIRECTORY plotjuggler_base/include/ DESTINATION include)
 export(PACKAGE ${PROJECT_NAME})
 
 if(NOT COMPILING_WITH_AMENT AND NOT COMPILING_WITH_CATKIN)
-
   include(GNUInstallDirs)
 
   set(PJ_CMAKECONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
@@ -328,7 +322,6 @@ if(NOT COMPILING_WITH_AMENT AND NOT COMPILING_WITH_CATKIN)
   message(STATUS "CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}")
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-                ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-          DESTINATION ${PJ_CMAKECONFIG_INSTALL_DIR})
-
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    DESTINATION ${PJ_CMAKECONFIG_INSTALL_DIR})
 endif()
