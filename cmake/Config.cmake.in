@@ -2,19 +2,60 @@
 
 include(CMakeFindDependencyMacro)
 
-set(PJ_MAJOR_VERSION "@PJ_MAJOR_VERSION@")
-set(PJ_MINOR_VERSION "@PJ_MINOR_VERSION@")
-set(PJ_PATCH_VERSION "@PJ_PATCH_VERSION@")
+set(PJ_MAJOR_VERSION "@PROJECT_VERSION_MAJOR@")
+set(PJ_MINOR_VERSION "@PROJECT_VERSION_MINOR@")
+set(PJ_PATCH_VERSION "@PROJECT_VERSION_PATCH@")
 
-find_dependency(Qt5 COMPONENTS Svg Concurrent)
+# Find Qt5 dependencies - all components used by PlotJuggler
+find_dependency(Qt5 COMPONENTS Core Widgets PrintSupport Concurrent Xml Svg OpenGL WebSockets Network)
 
 # Find fmt dependency
 find_dependency(fmt)
 
+# Handle Lua dependency
+# First try to find system Lua
+find_package(Lua QUIET)
+if(LUA_FOUND AND NOT TARGET lua::lua)
+    # Create lua::lua target if system Lua was found
+    add_library(lua::lua INTERFACE IMPORTED)
+    set_target_properties(lua::lua PROPERTIES 
+        INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}"
+        INTERFACE_LINK_LIBRARIES "${LUA_LIBRARIES}")
+endif()
+
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+
+# If lua_static was installed with PlotJuggler and lua::lua doesn't exist, create it
+if(TARGET @PROJECT_NAME@::lua_static AND NOT TARGET lua::lua)
+    add_library(lua::lua INTERFACE IMPORTED)
+    set_target_properties(lua::lua PROPERTIES 
+        INTERFACE_LINK_LIBRARIES "@PROJECT_NAME@::lua_static")
+endif()
+
+# Handle MSVC runtime library compatibility on Windows
+if(WIN32 AND MSVC)
+    # Get the runtime library setting from the main target
+    get_target_property(PJ_RUNTIME_LIBRARY @PROJECT_NAME@::plotjuggler_base MSVC_RUNTIME_LIBRARY)
+    if(PJ_RUNTIME_LIBRARY)
+        message(STATUS "PlotJuggler was built with MSVC runtime: ${PJ_RUNTIME_LIBRARY}")
+        # Note: Users should ensure their project uses compatible runtime library settings
+        # You can set CMAKE_MSVC_RUNTIME_LIBRARY in your project to match PlotJuggler
+    endif()
+endif()
 
 set_and_check(@PROJECT_NAME@_INCLUDE_DIR "@PACKAGE_PJ_INCLUDE_INSTALL_DIR@")
 
-set(@PROJECT_NAME@_LIBRARIES   plotjuggler_base)
+# Set library variables for compatibility
+set(@PROJECT_NAME@_LIBRARIES @PROJECT_NAME@::plotjuggler_base @PROJECT_NAME@::plotjuggler_qwt)
+set(@PROJECT_NAME@_INCLUDE_DIRS ${@PROJECT_NAME@_INCLUDE_DIR})
+
+# Create imported target aliases for easier usage
+if(NOT TARGET plotjuggler_base)
+    add_library(plotjuggler_base ALIAS @PROJECT_NAME@::plotjuggler_base)
+endif()
+
+if(NOT TARGET plotjuggler_qwt)
+    add_library(plotjuggler_qwt ALIAS @PROJECT_NAME@::plotjuggler_qwt)
+endif()
 
 check_required_components(@PROJECT_NAME@)

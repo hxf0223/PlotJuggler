@@ -136,6 +136,10 @@ if(WIN32)
   if(MSVC)
     add_compile_options(/wd4267 /wd4996)
     add_compile_options(/utf-8)
+
+    # Set MSVC runtime library to dynamic release/debug
+    # This ensures consistency across all targets
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
   endif()
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -fPIC -fno-omit-frame-pointer")
@@ -289,6 +293,17 @@ install(
   RUNTIME DESTINATION bin
   INCLUDES
   DESTINATION include)
+
+# Install lua_static if it was built as part of this project
+if(TARGET lua_static)
+  install(
+    TARGETS lua_static
+    EXPORT ${PROJECT_NAME}Targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include)
+endif()
 
 install(DIRECTORY plotjuggler_base/include/ DESTINATION include)
 
